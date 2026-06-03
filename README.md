@@ -118,18 +118,27 @@
 
 ### 安装
 
-**方式一：Git Clone（推荐，可自动更新）**
+**方式一：Plugin Marketplace 安装（推荐，一键安装）**
+
+```bash
+# 1. 添加本仓库为 marketplace
+claude plugin marketplace add ostar999/ostar-science-content-ppt
+
+# 2. 在 Claude Code 对话中安装
+/plugin install ostar-science-content-ppt@ostar-science-content-ppt
+```
+
+**方式二：Git Clone（可自动更新）**
 
 ```bash
 cd ~/.claude/skills/
 git clone https://github.com/ostar999/ostar-science-content-ppt.git
 ```
 
-**方式二：手动下载**
+**方式三：手动下载**
 
 ```bash
-# 1. 下载本项目 ZIP 并解压
-# 2. 将解压后的 ostar-science-content-ppt 文件夹复制到 ~/.claude/skills/
+# 下载 ZIP → 解压 → 复制到 skills 目录
 cp -r ~/Downloads/ostar-science-content-ppt ~/.claude/skills/
 ```
 
