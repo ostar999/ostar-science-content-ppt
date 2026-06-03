@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI大模型核心原理 — 紫色·青色主题</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#0F0E17;color:#FFFFFE;overflow:hidden;width:100vw;height:100vh}
+
+:root{--accent:#7B5CF0;--accent2:#00D9FF;--dark:#0F0E17;--dark2:#1A1932;--gray:#A7A9BE;--warm:#FF6B6B;--teal:#06D6A0;--amber:#FFB347}
+
+.lc{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+.lc-80 svg{width:80px;height:80px}.lc-64 svg{width:64px;height:64px}.lc-48 svg{width:48px;height:48px}
+.lc-40 svg{width:40px;height:40px}.lc-36 svg{width:36px;height:36px}.lc-32 svg{width:32px;height:32px}
+.lc-28 svg{width:28px;height:28px}.lc-24 svg{width:24px;height:24px}.lc-20 svg{width:20px;height:20px}
+
+.slide-container{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 60px;opacity:0;pointer-events:none;transition:opacity .6s ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide .anim{opacity:0;transform:translateY(45px);transition:none}
+.slide.active .anim.show{opacity:1;transform:translateY(0);transition:opacity .7s cubic-bezier(.25,.46,.45,.94),transform .7s cubic-bezier(.25,.46,.45,.94)}
+
+.particles{position:absolute;width:100%;height:100%;top:0;left:0;pointer-events:none;overflow:hidden;z-index:0}
+.particle{position:absolute;border-radius:50%;opacity:.2;animation:floatUp linear infinite}
+@keyframes floatUp{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.2}90%{opacity:.2}100%{transform:translateY(-10vh) rotate(720deg);opacity:0}}
+
+.deco{position:absolute;border-radius:50%;pointer-events:none}
+.deco-pink{background:radial-gradient(circle,rgba(123,92,240,.15),transparent)}
+.deco-peach{background:radial-gradient(circle,rgba(0,217,255,.12),transparent)}
+.deco-lav{background:radial-gradient(circle,rgba(155,89,182,.1),transparent)}
+.deco-square{position:absolute;pointer-events:none;opacity:.04;border-radius:8px;border:3px solid;transform:rotate(45deg)}
+
+.t-hero{font-size:5rem;font-weight:900;line-height:1.15;text-align:center}
+.t-huge{font-size:3.8rem;font-weight:900;line-height:1.2;text-align:center}
+.t-big{font-size:2.8rem;font-weight:800;line-height:1.3;text-align:center}
+.t-mid{font-size:2rem;font-weight:700;line-height:1.4;text-align:center}
+.t-body{font-size:1.6rem;font-weight:400;line-height:1.6;text-align:center}
+.t-sm{font-size:1.2rem;font-weight:400;line-height:1.5;text-align:center}
+
+.c-pink{color:#7B5CF0}.c-rose{color:#5B4CE8}.c-coral{color:#00D9FF}.c-orange{color:#00B4D8}
+.c-purple{color:#9B5DE5}.c-teal{color:#06D6A0}.c-blue{color:#4A90D9}.c-dark{color:#FFFFFE}
+.c-gray{color:#A7A9BE}.c-white{color:#fff}.c-amber{color:#FFB347}.c-warm{color:#FF6B6B}
+
+.bg-pink{background:rgba(123,92,240,.15);padding:5px 18px;border-radius:10px}
+.bg-rose{background:rgba(91,76,232,.15);padding:5px 18px;border-radius:10px}
+.bg-peach{background:rgba(0,217,255,.12);padding:5px 18px;border-radius:10px}
+.bg-teal{background:rgba(6,214,160,.12);padding:5px 18px;border-radius:10px}
+.bg-purple{background:rgba(155,89,234,.12);padding:5px 18px;border-radius:10px}
+
+.ul-rose{text-decoration:underline;text-decoration-color:#5B4CE8;text-decoration-thickness:4px;text-underline-offset:8px}
+.ul-pink{text-decoration:underline;text-decoration-color:#7B5CF0;text-decoration-thickness:4px;text-underline-offset:8px}
+.bold{font-weight:900}.italic{font-style:italic}
+.line{width:70px;height:4px;border-radius:2px;background:linear-gradient(90deg,#7B5CF0,#00D9FF);margin:16px auto}
+
+.two-col{display:flex;gap:28px;width:94%;max-width:1200px;align-items:stretch}
+.col-card{flex:1;background:rgba(26,25,50,.6);border-radius:20px;padding:28px 24px;border:2px solid rgba(123,92,240,.2);box-shadow:0 6px 30px rgba(123,92,240,.1);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.col-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(123,92,240,.15)}
+.col-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:20px 20px 0 0}
+.card-icon-badge{width:80px;height:80px;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;position:relative}
+.card-icon-badge::after{content:'';position:absolute;inset:-3px;border-radius:22px;opacity:.3;z-index:0}
+.card-icon-badge .lc{position:relative;z-index:1}
+
+.layer-stack{width:88%;max-width:900px;display:flex;flex-direction:column;gap:0}
+.layer-box{padding:20px 28px;display:flex;align-items:center;gap:16px;border:2px solid rgba(123,92,240,.15);background:rgba(26,25,50,.5);transition:transform .3s}
+.layer-box:hover{transform:translateX(8px)}
+.layer-box:first-child{border-radius:18px 18px 0 0}
+.layer-box:last-child{border-radius:0 0 18px 18px}
+.layer-num{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.layer-content{flex:1}
+.layer-tag{display:inline-block;padding:3px 12px;border-radius:8px;font-size:.9rem;font-weight:700;margin-top:4px}
+
+.shape-grid{display:flex;gap:18px;margin:12px 0;justify-content:center;flex-wrap:wrap}
+.shape-circle{border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;font-weight:900;color:#fff;transition:transform .3s}
+.shape-circle:hover{transform:scale(1.1)}
+.sh-sm{width:90px;height:90px;font-size:1.5rem}.sh-md{width:105px;height:105px;font-size:1.6rem}
+.sp{background:linear-gradient(135deg,#7B5CF0,#9B5DE5)}.so{background:linear-gradient(135deg,#00D9FF,#00B4D8)}
+.sv{background:linear-gradient(135deg,#9B5DE5,#C39BD3)}.st{background:linear-gradient(135deg,#06D6A0,#00B4D8)}
+.sb{background:linear-gradient(135deg,#4A90D9,#7AB3E8)}.sr{background:linear-gradient(135deg,#FF6B6B,#FF8E8E)}
+.sa{background:linear-gradient(135deg,#FFB347,#FF8C42)}
+
+.formula-box{background:rgba(26,25,50,.5);border-radius:24px;padding:30px 40px;border:3px solid rgba(123,92,240,.2);box-shadow:0 8px 40px rgba(123,92,240,.1);display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;position:relative;overflow:hidden}
+.formula-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(123,92,240,.05),transparent,rgba(0,217,255,.05),transparent);animation:formulaSpin 12s linear infinite}
+@keyframes formulaSpin{100%{transform:rotate(360deg)}}
+.formula-part{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:1}
+.formula-op{font-size:3rem;font-weight:900;color:#7B5CF0;position:relative;z-index:1}
+
+.subtitle-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 24px;border-radius:50px;font-size:1.1rem;font-weight:700;border:2px solid}
+
+.concept-word{font-size:4.5rem;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,#7B5CF0,#00D9FF,#9B5DE5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.bg-1{background:radial-gradient(ellipse at 50% 30%,#1A1932 0%,#0F0E17 100%)}
+.bg-2{background:radial-gradient(ellipse at 30% 20%,#1A1932 0%,#0F0E17 100%)}
+.bg-3{background:radial-gradient(ellipse at 70% 80%,#1A1932 0%,#0F0E17 100%)}
+.bg-4{background:radial-gradient(ellipse at 50% 50%,#1A1932 0%,#0F0E17 100%)}
+.bg-5{background:radial-gradient(ellipse at 50% 70%,#1A1932 0%,#0F0E17 100%)}
+
+/* Overview */
+.overview-panel{display:none;position:fixed;inset:0;z-index:999;background:rgba(8,7,14,.96);flex-wrap:wrap;gap:16px;padding:50px 28px 28px;overflow-y:auto;align-content:flex-start;justify-content:center;flex-direction:row}
+.overview-panel.active{display:flex}
+.overview-hint{width:100%;text-align:center;padding:10px;color:rgba(255,255,255,.6);font-size:14px;font-weight:600;letter-spacing:1px;flex-shrink:0}
+.ov-card{width:340px;height:225px;border-radius:12px;overflow:hidden;border:2px solid rgba(123,92,240,.15);cursor:pointer;position:relative;transition:all .3s;background:#1A1932;flex-shrink:0}
+.ov-card:hover{transform:translateY(-6px);box-shadow:0 15px 40px rgba(0,0,0,.6);border-color:#7B5CF0}
+.ov-card-inner{width:1360px;height:900px;transform:scale(.25);transform-origin:top left;pointer-events:none;position:relative;overflow:hidden}
+.ov-card-inner .slide{position:absolute!important;top:0!important;left:0!important;width:100%!important;height:100%!important;display:flex!important;opacity:1!important;overflow:hidden!important;pointer-events:none!important}
+.ov-card-num{position:absolute;top:8px;right:10px;background:rgba(0,0,0,.8);color:#fff;padding:3px 12px;border-radius:12px;font-size:13px;font-weight:700;z-index:2}
+.ov-card-title{position:absolute;bottom:8px;left:10px;right:10px;background:rgba(0,0,0,.7);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
+.ov-close-btn{position:fixed;top:16px;right:24px;z-index:1001;width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.2);background:rgba(0,0,0,.6);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.ov-close-btn:hover{background:rgba(255,255,255,.15);border-color:#fff}
+
+.fever-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:88%;max-width:960px}
+.fever-mini{display:flex;align-items:center;gap:10px;background:rgba(26,25,50,.5);border-radius:12px;padding:12px 16px;border:1px solid rgba(123,92,240,.15);transition:transform .3s}
+.fever-mini:hover{transform:translateY(-3px)}
+.fever-mini .fm-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+@media(max-width:768px){.slide{padding:30px 24px}.two-col{flex-direction:column;width:100%}.fever-grid{grid-template-columns:repeat(2,1fr)}.t-hero{font-size:3rem}.t-huge{font-size:2.5rem}.t-big{font-size:2rem}}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="slide-container">
+
+<!-- ===== Slide 1: Cover ===== -->
+<div class="slide bg-1 active" id="s0">
+  <div class="deco deco-pink" style="width:500px;height:500px;top:-200px;right:-180px"></div>
+  <div class="deco deco-peach" style="width:350px;height:350px;bottom:-100px;left:-100px"></div>
+  <div class="deco-square" style="width:60px;height:60px;border-color:#7B5CF0;top:15%;left:8%"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+    <span class="lc lc-64 c-coral"><i data-lucide="brain"></i></span>
+    <span class="t-huge c-dark">AI 大模型</span>
+    <span class="lc lc-64 c-pink"><i data-lucide="cpu"></i></span>
+  </div>
+  <div class="anim t-huge c-dark"><span class="c-pink bold">核心原理</span></div>
+  <div class="anim t-mid c-pink" style="margin-top:4px;letter-spacing:6px">从 Token 到 ChatGPT</div>
+  <div class="anim line"></div>
+  <div class="anim t-body c-gray" style="max-width:900px">
+    通过学习<span class="c-rose bold">海量文本的统计规律</span>，
+    预测下一个最可能出现的<span class="c-teal bold">词（Token）</span>。
+    <span class="c-dark bold ul-rose">ChatGPT、Claude、Gemini、DeepSeek</span> 都基于此。
+  </div>
+  <div class="anim" style="margin-top:20px">
+    <span class="subtitle-badge" style="color:#7B5CF0;border-color:rgba(123,92,240,.2);background:rgba(123,92,240,.04)">
+      <span class="lc lc-20 c-pink"><i data-lucide="microchip"></i></span>LLM · Transformer · Attention · RLHF
+    </span>
+  </div>
+</div>
+
+<!-- ===== Slide 2: Token + Embedding ===== -->
+<div class="slide bg-2" id="s1">
+  <div class="deco deco-pink" style="width:400px;height:400px;top:-130px;left:-130px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span class="subtitle-badge" style="color:#00D9FF;border-color:rgba(0,217,255,.2);background:rgba(0,217,255,.04)">
+      <span class="lc lc-20 c-coral"><i data-lucide="layers"></i></span>基础概念 · Token & Embedding
+    </span>
+  </div>
+
+  <div class="anim two-col">
+    <div class="col-card" style="border-left:6px solid #00D9FF">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(0,217,255,.08),rgba(0,217,255,.02))">
+        <span class="lc lc-48 c-coral"><i data-lucide="box"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-coral bold">Token 化</span></div>
+      <div class="t-sm c-gray italic">文本 → 词元 → 数字ID</div>
+      <div style="margin:8px 0;width:100%">
+        <svg width="100%" height="100" viewBox="0 0 280 100">
+          <rect x="10" y="10" width="260" height="80" rx="12" fill="rgba(0,217,255,.04)" stroke="rgba(0,217,255,.2)" stroke-width="1.5"/>
+          <text x="140" y="40" text-anchor="middle" fill="#00D9FF" font-size="13" font-weight="700">我喜欢学习人工智能</text>
+          <text x="140" y="62" text-anchor="middle" fill="#A7A9BE" font-size="11">我 / 喜欢 / 学习 / 人工 / 智能</text>
+          <text x="140" y="82" text-anchor="middle" fill="#9B5DE5" font-size="11">[312] [5431] [845] [2917] [6602]</text>
+        </svg>
+      </div>
+      <div class="t-sm c-gray">模型在<span class="c-coral bold">数字世界</span>里运算</div>
+    </div>
+    <div class="col-card" style="border-left:6px solid #06D6A0">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(6,214,160,.08),rgba(6,214,160,.02))">
+        <span class="lc lc-48 c-teal"><i data-lucide="axis-3d"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-teal bold">Embedding</span></div>
+      <div class="t-sm c-gray italic">把文字变成数学向量</div>
+      <div style="margin:8px 0;width:100%">
+        <svg width="100%" height="100" viewBox="0 0 280 100">
+          <rect x="10" y="10" width="260" height="80" rx="12" fill="rgba(6,214,160,.04)" stroke="rgba(6,214,160,.2)" stroke-width="1.5"/>
+          <text x="140" y="35" text-anchor="middle" fill="#06D6A0" font-size="13" font-weight="700">"猫" → [0.23, -0.54, 1.27, ...]</text>
+          <text x="140" y="55" text-anchor="middle" fill="#06D6A0" font-size="13" font-weight="700">"狗" → [0.31, -0.49, 1.35, ...]</text>
+          <text x="140" y="78" text-anchor="middle" fill="#A7A9BE" font-size="11">语义相近 → 向量空间距离近</text>
+        </svg>
+      </div>
+      <div class="t-sm c-gray">语言<span class="c-teal bold">映射到数学空间</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 3: Transformer + Attention ===== -->
+<div class="slide bg-3" id="s2">
+  <div class="deco deco-lav" style="width:450px;height:450px;bottom:-150px;right:-150px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span class="subtitle-badge" style="color:#9B5DE5;border-color:rgba(155,89,229,.2);background:rgba(155,89,229,.04)">
+      <span class="lc lc-20 c-purple"><i data-lucide="cpu"></i></span>核心架构 · Transformer & Attention
+    </span>
+  </div>
+
+  <div class="anim two-col">
+    <div class="col-card" style="border-left:6px solid #9B5DE5">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(155,89,229,.08),rgba(155,89,229,.02))">
+        <span class="lc lc-48 c-purple"><i data-lucide="network"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-purple bold">Transformer</span></div>
+      <div class="t-sm c-gray">2017 · Google Brain · "Attention Is All You Need"</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:8px">
+        <div class="layer-tag" style="background:rgba(0,217,255,.12);color:#00D9FF;text-align:center">GPT · OpenAI</div>
+        <div class="layer-tag" style="background:rgba(255,107,107,.12);color:#FF6B6B;text-align:center">Claude · Anthropic</div>
+        <div class="layer-tag" style="background:rgba(6,214,160,.12);color:#06D6A0;text-align:center">Gemini · Google</div>
+        <div class="layer-tag" style="background:rgba(155,89,229,.12);color:#9B5DE5;text-align:center">DeepSeek</div>
+      </div>
+      <div class="t-sm c-gray">现在<span class="c-purple bold">几乎所有大模型</span>都基于此</div>
+    </div>
+    <div class="col-card" style="border-left:6px solid #FF6B6B">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(255,107,107,.08),rgba(255,107,107,.02))">
+        <span class="lc lc-48 c-warm"><i data-lucide="eye"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-warm bold">Attention</span></div>
+      <div class="t-sm c-gray italic">注意力机制 — 最重要部分</div>
+      <div style="margin:8px 0;width:100%">
+        <svg width="100%" height="100" viewBox="0 0 280 100">
+          <rect x="10" y="5" width="260" height="90" rx="12" fill="rgba(255,107,107,.04)" stroke="rgba(255,107,107,.2)" stroke-width="1.5"/>
+          <text x="140" y="25" text-anchor="middle" fill="#A7A9BE" font-size="11">"小明把书放桌上，然后他离开了"</text>
+          <text x="140" y="48" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="700">"他" → 80% 关注小明 ✓</text>
+          <text x="140" y="68" text-anchor="middle" fill="#FFB347" font-size="11">10% 桌子 · 5% 书</text>
+          <text x="140" y="87" text-anchor="middle" fill="#06D6A0" font-size="11" font-weight="600">理解上下文指代关系</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="anim" style="margin-top:16px">
+    <div class="formula-box" style="padding:20px 36px">
+      <div class="formula-part"><span class="lc lc-36 c-purple"><i data-lucide="network"></i></span><span style="font-weight:800;color:#FFFFFE">Transformer</span></div>
+      <div class="formula-op">+</div>
+      <div class="formula-part"><span class="lc lc-36 c-warm"><i data-lucide="eye"></i></span><span style="font-weight:800;color:#FF6B6B">Attention</span></div>
+      <div class="formula-op">=</div>
+      <div class="formula-part"><span class="lc lc-36 c-teal"><i data-lucide="zap"></i></span><span style="font-weight:800;color:#06D6A0">理解上下文</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 4: 多层神经网络 ===== -->
+<div class="slide bg-4" id="s3">
+  <div class="deco deco-peach" style="width:500px;height:500px;top:-200px;left:50%;margin-left:-250px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span class="subtitle-badge" style="color:#00D9FF;border-color:rgba(0,217,255,.2);background:rgba(0,217,255,.04)">
+      <span class="lc lc-20 c-coral"><i data-lucide="layers"></i></span>深层结构 · 多层神经网络
+    </span>
+  </div>
+  <div class="anim t-mid c-dark" style="margin-bottom:8px">现代大模型 <span class="c-purple bold">40~120+ 层</span>，逐层提取信息</div>
+  <div class="anim line"></div>
+
+  <div class="anim layer-stack">
+    <div class="layer-box">
+      <div class="layer-num" style="background:linear-gradient(135deg,#00D9FF,#3b82f6)">1</div>
+      <div class="layer-content">
+        <div style="font-size:1.3rem;font-weight:800;color:#FFFFFE">浅层</div>
+        <div style="font-size:.95rem;color:#A7A9BE">识别<span class="c-coral bold">字、词、标点</span></div>
+      </div>
+      <span class="lc lc-32 c-coral"><i data-lucide="type"></i></span>
+    </div>
+    <div class="layer-box">
+      <div class="layer-num" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">N</div>
+      <div class="layer-content">
+        <div style="font-size:1.3rem;font-weight:800;color:#FFFFFE">中层</div>
+        <div style="font-size:.95rem;color:#A7A9BE">识别<span class="c-blue bold">语法、句法</span></div>
+      </div>
+      <span class="lc lc-32 c-blue"><i data-lucide="code-2"></i></span>
+    </div>
+    <div class="layer-box">
+      <div class="layer-num" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">M</div>
+      <div class="layer-content">
+        <div style="font-size:1.3rem;font-weight:800;color:#FFFFFE">高层</div>
+        <div style="font-size:.95rem;color:#A7A9BE">识别<span class="c-purple bold">逻辑、推理、知识、风格</span></div>
+      </div>
+      <span class="lc lc-32 c-purple"><i data-lucide="brain"></i></span>
+    </div>
+  </div>
+
+  <div class="anim shape-grid" style="margin-top:14px">
+    <div class="shape-circle sh-sm sp"><span class="lc lc-24"><i data-lucide="font-reader"></i></span>字词</div>
+    <div class="shape-circle sh-sm sb"><span class="lc lc-24"><i data-lucide="code-2"></i></span>语法</div>
+    <div class="shape-circle sh-sm sv"><span class="lc lc-24"><i data-lucide="brain"></i></span>推理</div>
+  </div>
+</div>
+
+<!-- ===== Slide 5: 训练 + 参数 ===== -->
+<div class="slide bg-5" id="s4">
+  <div class="deco deco-lav" style="width:600px;height:600px;top:50%;left:50%;margin-top:-300px;margin-left:-300px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span class="subtitle-badge" style="color:#FF6B6B;border-color:rgba(255,107,107,.2);background:rgba(255,107,107,.04)">
+      <span class="lc lc-20 c-warm"><i data-lucide="dumbbell"></i></span>训练机制
+    </span>
+  </div>
+
+  <div class="anim two-col">
+    <div class="col-card" style="border-left:6px solid #FF6B6B">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(255,107,107,.08),rgba(255,107,107,.02))">
+        <span class="lc lc-48 c-warm"><i data-lucide="scan-eye"></i></span>
+      </div>
+      <div class="t-mid c-dark">如何<span class="c-warm bold">训练</span>？</div>
+      <div class="t-sm c-gray">遮住后面 → 让模型预测 → 对比答案</div>
+      <div style="margin:8px 0;width:100%">
+        <svg width="100%" height="90" viewBox="0 0 280 90">
+          <rect x="10" y="5" width="260" height="80" rx="10" fill="rgba(255,107,107,.04)" stroke="rgba(255,107,107,.2)" stroke-width="1.5"/>
+          <text x="140" y="28" text-anchor="middle" fill="#A7A9BE" font-size="11">"中国的首都是 [MASK]"</text>
+          <text x="140" y="48" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="700">模型猜：上海 ✗ → 正确答案：北京</text>
+          <text x="140" y="72" text-anchor="middle" fill="#9B5DE5" font-size="11">计算误差 → 反向传播 → 调整参数</text>
+        </svg>
+      </div>
+      <div class="t-sm c-gray">重复<span class="c-amber bold">数万亿次</span></div>
+    </div>
+    <div class="col-card" style="border-left:6px solid #FFB347">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(255,179,71,.08),rgba(255,179,71,.02))">
+        <span class="lc lc-48 c-amber"><i data-lucide="sliders"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-amber bold">参数</span></div>
+      <div class="t-sm c-gray italic">Parameters — 数字权重</div>
+      <div style="display:flex;flex-direction:column;gap:6px;width:100%;margin-top:8px">
+        <div class="layer-tag" style="background:rgba(0,217,255,.1);color:#00D9FF;text-align:center">GPT-2: 1.5亿</div>
+        <div class="layer-tag" style="background:rgba(155,89,229,.1);color:#9B5DE5;text-align:center">GPT-3: 1750亿</div>
+        <div class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0;text-align:center">Llama 70B: 700亿</div>
+      </div>
+      <div class="t-sm c-gray" style="margin-top:4px"><span class="c-warm bold">参数多 ≠ 更聪明</span>，训练数据同样重要</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 6: 预训练 + SFT ===== -->
+<div class="slide bg-1" id="s5">
+  <div class="deco deco-pink" style="width:400px;height:400px;top:-130px;right:-130px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <span class="subtitle-badge" style="color:#06D6A0;border-color:rgba(6,214,160,.2);background:rgba(6,214,160,.04)">
+      <span class="lc lc-20 c-teal"><i data-lucide="book-open"></i></span>训练阶段 · Pre-training & SFT
+    </span>
+  </div>
+
+  <div class="anim two-col">
+    <div class="col-card" style="border-left:6px solid #06D6A0">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(6,214,160,.08),rgba(6,214,160,.02))">
+        <span class="lc lc-48 c-teal"><i data-lucide="globe"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-teal bold">预训练</span> Pre-training</div>
+      <div class="t-sm c-gray">阅读海量互联网内容</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+        <span class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0">书籍</span>
+        <span class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0">论文</span>
+        <span class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0">代码</span>
+        <span class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0">网站</span>
+        <span class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0">问答</span>
+      </div>
+      <div class="t-sm c-gray" style="margin-top:6px">数万亿 Token → <span class="c-teal bold">基础模型 Base Model</span></div>
+    </div>
+    <div class="col-card" style="border-left:6px solid #FFB347">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(255,179,71,.08),rgba(255,179,71,.02))">
+        <span class="lc lc-48 c-amber"><i data-lucide="graduation-cap"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-amber bold">指令微调</span> SFT</div>
+      <div class="t-sm c-gray">基础模型只会续写，不会回答问题</div>
+      <div style="margin-top:6px">
+        <span class="layer-tag" style="background:rgba(255,179,71,.1);color:#FFB347">问题 → 标准答案 × 大量样本</span>
+      </div>
+      <div class="t-sm c-gray" style="margin-top:6px">学会<span class="c-amber bold">听懂指令</span>：续写模型 → 问答助手</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 7: RLHF ===== -->
+<div class="slide bg-2" id="s6">
+  <div class="deco deco-peach" style="width:500px;height:500px;top:-220px;left:50%;margin-left:-250px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <span class="subtitle-badge" style="color:#FF6B6B;border-color:rgba(255,107,107,.2);background:rgba(255,107,107,.04)">
+      <span class="lc lc-20 c-warm"><i data-lucide="star"></i></span>训练阶段3 · RLHF
+    </span>
+  </div>
+  <div class="anim t-mid c-dark" style="margin-bottom:2px"><span class="c-warm bold">RLHF</span>：ChatGPT 成功的关键</div>
+  <div class="anim line" style="background:linear-gradient(90deg,#FF6B6B,#7B5CF0)"></div>
+
+  <div class="anim layer-stack">
+    <div class="layer-box">
+      <div class="layer-num" style="background:linear-gradient(135deg,#FF6B6B,#FFB347)">1</div>
+      <div class="layer-content"><div style="font-size:1.2rem;font-weight:800;color:#FFFFFE">同一问题 → 模型给出<span class="c-warm bold">多个答案</span></div></div>
+      <span class="lc lc-32 c-warm"><i data-lucide="list"></i></span>
+    </div>
+    <div class="layer-box">
+      <div class="layer-num" style="background:linear-gradient(135deg,#FFB347,#8B5CF6)">2</div>
+      <div class="layer-content"><div style="font-size:1.2rem;font-weight:800;color:#FFFFFE">人类<span class="c-amber bold">排序</span>（好 → 差）</div></div>
+      <span class="lc lc-32 c-amber"><i data-lucide="arrow-up-down"></i></span>
+    </div>
+    <div class="layer-box">
+      <div class="layer-num" style="background:linear-gradient(135deg,#8B5CF6,#00D9FF)">3</div>
+      <div class="layer-content"><div style="font-size:1.2rem;font-weight:800;color:#FFFFFE">训练<span class="c-coral bold">奖励模型</span> → 强化学习优化</div></div>
+      <span class="lc lc-32 c-coral"><i data-lucide="sparkles"></i></span>
+    </div>
+  </div>
+
+  <div class="anim" style="margin-top:16px">
+    <div class="formula-box" style="padding:16px 32px">
+      <div class="formula-part"><span style="font-weight:800;color:#06D6A0;font-size:1.1rem">更有帮助</span></div>
+      <div class="formula-op" style="font-size:1.5rem">·</div>
+      <div class="formula-part"><span style="font-weight:800;color:#06D6A0;font-size:1.1rem">更安全</span></div>
+      <div class="formula-op" style="font-size:1.5rem">·</div>
+      <div class="formula-part"><span style="font-weight:800;color:#06D6A0;font-size:1.1rem">更符合人类偏好</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 8: 推理 + 幻觉 ===== -->
+<div class="slide bg-3" id="s7">
+  <div class="deco deco-pink" style="width:400px;height:400px;top:-130px;right:-130px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <span class="subtitle-badge" style="color:#9B5DE5;border-color:rgba(155,89,229,.2);background:rgba(155,89,229,.04)">
+      <span class="lc lc-20 c-purple"><i data-lucide="rocket"></i></span>前沿与局限
+    </span>
+  </div>
+
+  <div class="anim two-col">
+    <div class="col-card" style="border-left:6px solid #9B5DE5">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(155,89,229,.08),rgba(155,89,229,.02))">
+        <span class="lc lc-48 c-purple"><i data-lucide="brain-circuit"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-purple bold">推理模型</span></div>
+      <div class="t-sm c-gray">GPT-5 · Claude Opus · DeepSeek-R1</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+        <span class="layer-tag" style="background:rgba(0,217,255,.1);color:#00D9FF">分析</span>
+        <span class="lc lc-20 c-coral"><i data-lucide="arrow-right"></i></span>
+        <span class="layer-tag" style="background:rgba(155,89,229,.1);color:#9B5DE5">规划</span>
+        <span class="lc lc-20 c-coral"><i data-lucide="arrow-right"></i></span>
+        <span class="layer-tag" style="background:rgba(6,214,160,.1);color:#06D6A0">验证</span>
+        <span class="lc lc-20 c-coral"><i data-lucide="arrow-right"></i></span>
+        <span class="layer-tag" style="background:rgba(255,107,107,.1);color:#FF6B6B">输出</span>
+      </div>
+      <div class="t-sm c-gray" style="margin-top:6px">先思考再回答，<span class="c-purple bold">推理能力明显增强</span></div>
+    </div>
+    <div class="col-card" style="border-left:6px solid #FF6B6B">
+      <div class="card-icon-badge" style="background:linear-gradient(135deg,rgba(255,107,107,.08),rgba(255,107,107,.02))">
+        <span class="lc lc-48 c-warm"><i data-lucide="alert-triangle"></i></span>
+      </div>
+      <div class="t-mid c-dark"><span class="c-warm bold">幻觉</span> Hallucination</div>
+      <div class="t-sm c-gray italic">预测Token ≠ 查询数据库</div>
+      <div style="margin-top:6px;text-align:center">
+        <span class="layer-tag" style="background:rgba(255,107,107,.1);color:#FF6B6B">语法正确 + 逻辑合理 + 事实错误</span>
+      </div>
+      <div class="t-sm c-gray" style="margin-top:4px">编造论文、API、人名 — <span class="c-warm bold">核心挑战</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 9: 完整工作流总结 ===== -->
+<div class="slide bg-4" id="s8">
+  <div class="deco deco-lav" style="width:700px;height:700px;top:50%;left:50%;margin-top:-350px;margin-left:-350px"></div>
+
+  <div class="anim" style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <span class="subtitle-badge" style="color:#9B5DE5;border-color:rgba(155,89,229,.2);background:rgba(155,89,229,.04)">
+      <span class="lc lc-20 c-purple"><i data-lucide="sparkles"></i></span>一张图总结
+    </span>
+  </div>
+  <div class="anim t-mid c-dark">大模型<span class="c-pink bold ul-pink">完整工作流</span></div>
+  <div class="anim line"></div>
+
+  <div class="anim layer-stack" style="max-width:800px">
+    <div class="layer-box"><div class="layer-num" style="background:linear-gradient(135deg,#00D9FF,#3b82f6)">1</div><div class="layer-content"><div style="font-size:1.15rem;font-weight:800;color:#FFFFFE">海量文本</div><div style="font-size:.85rem;color:#A7A9BE">书籍 · 论文 · 代码 · 网站</div></div><span class="lc lc-32 c-coral"><i data-lucide="globe"></i></span></div>
+    <div class="layer-box"><div class="layer-num" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">2</div><div class="layer-content"><div style="font-size:1.15rem;font-weight:800;color:#FFFFFE">Token 化 → Embedding</div><div style="font-size:.85rem;color:#A7A9BE">文本拆分 + 数学向量映射</div></div><span class="lc lc-32 c-blue"><i data-lucide="box"></i></span></div>
+    <div class="layer-box"><div class="layer-num" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">3</div><div class="layer-content"><div style="font-size:1.15rem;font-weight:800;color:#FFFFFE">Transformer + Attention</div><div style="font-size:.85rem;color:#A7A9BE">核心架构 + 注意力机制</div></div><span class="lc lc-32 c-purple"><i data-lucide="network"></i></span></div>
+    <div class="layer-box"><div class="layer-num" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">4</div><div class="layer-content"><div style="font-size:1.15rem;font-weight:800;color:#FFFFFE">多层神经网络 → 预测 Token</div><div style="font-size:.85rem;color:#A7A9BE">40~120+ 层逐层提取</div></div><span class="lc lc-32" style="color:#a855f7"><i data-lucide="layers"></i></span></div>
+    <div class="layer-box"><div class="layer-num" style="background:linear-gradient(135deg,#ec4899,#FF6B6B)">5</div><div class="layer-content"><div style="font-size:1.15rem;font-weight:800;color:#FFFFFE">预训练 → SFT → RLHF</div><div style="font-size:.85rem;color:#A7A9BE">三阶段训练体系</div></div><span class="lc lc-32 c-warm"><i data-lucide="dumbbell"></i></span></div>
+    <div class="layer-box" style="border-color:rgba(6,214,160,.4);background:rgba(6,214,160,.08)"><div class="layer-num" style="background:linear-gradient(135deg,#06D6A0,#00D9FF)"><span class="lc lc-20"><i data-lucide="check"></i></span></div><div class="layer-content"><div style="font-size:1.15rem;font-weight:800;color:#06D6A0">ChatGPT / Claude / Gemini</div><div style="font-size:.85rem;color:#A7A9BE">把语言、知识、逻辑压缩进参数里</div></div><span class="lc lc-32 c-teal"><i data-lucide="zap"></i></span></div>
+  </div>
+
+  <div class="anim concept-word" style="margin-top:12px">LLM</div>
+</div>
+
+</div><!-- /slide-container -->
+
+<!-- Overview Panel -->
+<div class="overview-panel" id="overviewPanel"></div>
+
+<script>
+lucide.createIcons();
+
+// Floating particles
+const particlesEl=document.getElementById('particles');
+const colors=['#7B5CF0','#00D9FF','#9B5DE5','#06D6A0','#FF6B6B','#FFB347'];
+for(let i=0;i<20;i++){
+  const p=document.createElement('div');p.className='particle';
+  const s=Math.random()*12+4;
+  p.style.cssText=`width:${s}px;height:${s}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s`;
+  particlesEl.appendChild(p);
+}
+
+const slides=document.querySelectorAll('.slide'),total=slides.length;
+let cur=0;
+
+function go(n){
+  if(n<0||n>=total||n===cur)return;
+  slides[cur].classList.remove('active');
+  // Clone to reset animations
+  slides[cur].querySelectorAll('.anim').forEach(function(item){var c=item.cloneNode(true);item.parentNode.replaceChild(c,item)});
+  cur=n;slides[cur].classList.add('active');
+  slides[cur].querySelectorAll('.anim').forEach((e,i)=>{e.classList.remove('show');setTimeout(()=>e.classList.add('show'),200+i*280)});
+}
+
+slides[0].querySelectorAll('.anim').forEach((e,i)=>setTimeout(()=>e.classList.add('show'),400+i*320));
+
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();go(cur+1)}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(cur-1)}
+  else if(e.key==='Home'){e.preventDefault();go(0)}
+  else if(e.key==='End'){e.preventDefault();go(total-1)}
+});
+
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;ty=e.changedTouches[0].screenY});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-tx,dy=e.changedTouches[0].screenY-ty;if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){dx<0?go(cur+1):go(cur-1)}});
+
+let wc=false;
+document.addEventListener('wheel',e=>{if(wc)return;wc=true;setTimeout(()=>wc=false,800);e.deltaY>0?go(cur+1):go(cur-1)});
+
+// === OVERVIEW (N key) ===
+const overviewPanel=document.getElementById('overviewPanel');
+function buildOverview(){
+  overviewPanel.innerHTML='';
+  const cb=document.createElement('button');cb.className='ov-close-btn';cb.innerHTML='<span class="lc lc-24"><i data-lucide="x"></i></span>';cb.onclick=toggleOverview;overviewPanel.appendChild(cb);
+  const hint=document.createElement('div');hint.className='overview-hint';hint.textContent='再次按下 N 键，退出预览';overviewPanel.appendChild(hint);
+  slides.forEach(function(s,i){
+    const card=document.createElement('div');card.className='ov-card';card.onclick=function(){toggleOverview();go(i)};
+    const inner=document.createElement('div');inner.className='ov-card-inner';
+    const clone=s.cloneNode(true);clone.classList.remove('active');clone.removeAttribute('id');
+    clone.style.cssText='position:absolute!important;top:0!important;left:0!important;width:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;opacity:1!important;overflow:hidden!important;pointer-events:none!important';
+    clone.querySelectorAll('.anim').forEach(function(el){el.style.opacity='1';el.style.transform='none';el.classList.add('show')});
+    clone.querySelectorAll('.particle,.deco,[class*="deco-"]').forEach(function(el){el.style.display='none'});
+    inner.appendChild(clone);card.appendChild(inner);
+    const num=document.createElement('div');num.className='ov-card-num';num.textContent=i+1;card.appendChild(num);
+    const title=document.createElement('div');title.className='ov-card-title';
+    const h=s.querySelector('.t-mid,.t-huge,.t-big');title.textContent=h?h.textContent.trim().slice(0,30):('第'+(i+1)+'页');
+    card.appendChild(title);overviewPanel.appendChild(card);
+  });
+  lucide.createIcons();
+}
+function toggleOverview(){
+  if(overviewPanel.classList.contains('active')){overviewPanel.classList.remove('active');return}
+  buildOverview();overviewPanel.classList.add('active');
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='n'||e.key==='N'){if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;e.preventDefault();toggleOverview()}
+  if(e.key==='f'||e.key==='F'){if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;e.preventDefault();document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+});
+</script>
+</body>
+</html>

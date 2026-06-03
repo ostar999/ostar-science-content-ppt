@@ -4,6 +4,24 @@
 
 ---
 
+## v2.3.0 — 2026-06-03
+
+**新增：交互参考模板 + SKILL.md 交互规范**
+
+### 新增
+
+- 🆕 **交互参考模板**：`assets/templates/interaction-examples/` 目录，含 3 个完整交互示例
+  - `AI_Animation.html` — 原始轮播版（15页 · Font Awesome · 深蓝主题）
+  - `AI_Animation_level2.html` — Level2 重构版（9页 · Lucide · 紫色主题）
+  - `AI_Animation_flow.html` — 单页流程图版（Canvas粒子 · 噪声背景 · 架构管道）
+- 🆕 **SKILL.md 交互功能规范**：独立的交互章节，含快捷键表、设计原则、实现代码示例
+
+### 变更
+
+- 🔄 SKILL.md "快捷键速查" + "总览预览" 合并为"交互功能规范"，更清晰的结构化文档
+
+---
+
 ## v2.2.0 — 2026-06-03
 
 **新增：F 键全屏 + 总览交互优化**

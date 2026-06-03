@@ -109,11 +109,16 @@ ostar-science-content-ppt/
         │   ├── 1.html ~ 9-3.html         #   9 个系列 26 个模板
         ├── PPT/                          # PPT 基础模板（回退选用）
         │   ├── PPT-Generate-1.html ~ PPT-Generate-7.html
-        └── Animation/                    # 流程图模板（14 个）
-            ├── SUMMARY.md                #   AI 选模板参考文档
-            ├── RNN-2.html ~ RNN-7.html
-            ├── LSTM-1.html
-            └── ...
+        ├── Animation/                    # 流程图模板（14 个）
+        │   ├── SUMMARY.md                #   AI 选模板参考文档
+        │   ├── RNN-2.html ~ RNN-7.html
+        │   ├── LSTM-1.html
+        │   └── ...
+        ├── interaction-examples/         # 🆕 交互参考模板（3 个）
+        │   ├── AI_Animation.html         #   原始轮播版 · 15页
+        │   ├── AI_Animation_level2.html  #   Level2 重构版 · 9页
+        │   └── AI_Animation_flow.html    #   单页流程图版
+        └── images/                       # README 示例图片
 ```
 
 ---

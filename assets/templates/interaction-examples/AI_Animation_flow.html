@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI大模型核心原理 — 技术架构全景</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:radial-gradient(circle at bottom left,#001f54 0%,transparent 50%),radial-gradient(circle at top right,#001f54 0%,transparent 30%),#000;min-height:100vh;color:#fff;position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:0.12;mix-blend-mode:overlay;animation:noiseMove 20s linear infinite;pointer-events:none;z-index:1}
+@keyframes noiseMove{0%{transform:translate(0,0) scale(1.1)}25%{transform:translate(-2%,-2%) scale(1.05)}50%{transform:translate(0,0) scale(1.1)}75%{transform:translate(2%,2%) scale(1.05)}100%{transform:translate(0,0) scale(1.1)}}
+
+#particlesCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeInLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeInScale{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes archFadeIn{from{opacity:0;transform:scale(1.1) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.container{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:60px 40px 80px;position:relative;z-index:10}
+
+/* Title */
+.section-title{font-size:52px;font-weight:800;text-align:center;color:#60a5fa;text-shadow:0 0 30px rgba(96,165,250,.4);opacity:0;animation:fadeInUp .8s ease forwards;animation-delay:.2s;margin-bottom:12px}
+.section-subtitle{text-align:center;font-size:22px;color:#94a3b8;margin-bottom:35px;opacity:0;animation:fadeInUp .8s ease forwards;animation-delay:.5s}
+
+/* Architecture diagram */
+.arch-diagram{display:flex;align-items:center;justify-content:center;gap:18px;padding:40px 30px;background:rgba(0,0,0,.3);border-radius:20px;border:1px solid rgba(255,255,255,.08);margin-bottom:35px;max-width:1500px;flex-wrap:wrap;opacity:0;animation:archFadeIn 1s ease forwards;animation-delay:.9s}
+
+.arch-layer{display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;transform:translateY(20px);animation:fadeInUp .6s ease forwards}
+.arch-layer:nth-child(1){animation-delay:1.1s}.arch-layer:nth-child(3){animation-delay:1.5s}
+.arch-layer:nth-child(5){animation-delay:1.9s}.arch-layer:nth-child(7){animation-delay:2.3s}
+.arch-layer:nth-child(9){animation-delay:2.7s}.arch-layer:nth-child(11){animation-delay:3.1s}
+
+.layer-label{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:1px}
+.layer-box{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.12);border-radius:12px;padding:18px 16px;min-width:130px;text-align:center;backdrop-filter:blur(10px);transition:all .3s ease}
+.layer-box:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.layer-icon{width:28px;height:28px;margin:0 auto 8px}
+.layer-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.layer-desc{font-size:10px;color:#94a3b8}
+
+/* Layer colors */
+.l-token{border-color:rgba(96,165,250,.4);background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(59,130,246,.05))}
+.l-token .layer-icon{color:#60a5fa}
+.l-embed{border-color:rgba(52,211,153,.4);background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(34,197,94,.05))}
+.l-embed .layer-icon{color:#34d399}
+.l-trans{border-color:rgba(233,69,96,.4);background:linear-gradient(135deg,rgba(233,69,96,.1),rgba(220,38,38,.05))}
+.l-trans .layer-icon{color:#e94560}
+.l-attn{border-color:rgba(254,202,87,.4);background:linear-gradient(135deg,rgba(254,202,87,.1),rgba(251,191,36,.05))}
+.l-attn .layer-icon{color:#feca57}
+.l-layer{border-color:rgba(168,85,247,.4);background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(139,92,246,.05))}
+.l-layer .layer-icon{color:#a855f7}
+.l-output{border-color:rgba(6,214,160,.4);background:linear-gradient(135deg,rgba(6,214,160,.1),rgba(0,212,170,.05))}
+.l-output .layer-icon{color:#06d6a0}
+
+/* Connectors */
+.arch-conn{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:50px;opacity:0;animation:fadeIn .5s ease forwards}
+.arch-conn:nth-child(2){animation-delay:1.3s}.arch-conn:nth-child(4){animation-delay:1.7s}
+.arch-conn:nth-child(6){animation-delay:2.1s}.arch-conn:nth-child(8){animation-delay:2.5s}
+.arch-conn:nth-child(10){animation-delay:2.9s}
+.conn-line{width:50px;height:2px;background:rgba(255,255,255,.2);position:relative}
+.conn-line::after{content:'';position:absolute;right:-4px;top:-3px;width:0;height:0;border-left:8px solid rgba(255,255,255,.3);border-top:4px solid transparent;border-bottom:4px solid transparent}
+.conn-label{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.5px}
+
+/* Section cards */
+.section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;width:100%;max-width:1200px;margin-bottom:30px}
+.info-card{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;backdrop-filter:blur(10px);opacity:0;animation:fadeInUp .6s ease forwards;transition:transform .3s}
+.info-card:hover{transform:translateY(-4px)}
+.info-card:nth-child(1){animation-delay:3.5s}.info-card:nth-child(2){animation-delay:3.7s}
+.info-card:nth-child(3){animation-delay:3.9s}.info-card:nth-child(4){animation-delay:4.1s}
+
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900}
+.card-icon.blue{background:rgba(96,165,250,.15);color:#60a5fa}
+.card-icon.green{background:rgba(52,211,153,.15);color:#34d399}
+.card-icon.red{background:rgba(233,69,96,.15);color:#e94560}
+.card-icon.purple{background:rgba(168,85,247,.15);color:#a855f7}
+.card-icon.amber{background:rgba(254,202,87,.15);color:#feca57}
+.card-icon.cyan{background:rgba(6,214,160,.15);color:#06d6a0}
+.card-title{font-size:16px;font-weight:700;color:#fff}
+.card-text{font-size:14px;color:#94a3b8;line-height:1.7}
+
+/* Quote section */
+.quote-section{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px 35px;backdrop-filter:blur(10px);max-width:1000px;margin-bottom:25px;opacity:0;animation:fadeInUp .8s ease forwards;animation-delay:4.5s}
+.quote-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:#e94560;margin-bottom:14px;opacity:0;transform:translateX(-20px);animation:fadeInLeft .5s ease forwards;animation-delay:4.8s}
+.quote-text{font-size:18px;font-weight:700;color:#e94560;font-style:italic;padding:14px 18px;background:rgba(233,69,96,.08);border-left:3px solid #e94560;border-radius:0 8px 8px 0;margin-bottom:12px;line-height:1.6}
+.quote-desc{font-size:15px;color:#cbd5e1;line-height:1.7;opacity:0;animation:fadeIn .6s ease forwards;animation-delay:5.2s}
+
+/* Highlight */
+.hl-blue{color:#60a5fa;font-weight:700}.hl-red{color:#ef4444;font-weight:700}
+.hl-green{color:#34d399;font-weight:700}.hl-purple{color:#a855f7;font-weight:700}
+.hl-amber{color:#feca57;font-weight:700}.hl-cyan{color:#06d6a0;font-weight:700}
+.hl-dim{color:#94a3b8;font-style:italic}
+
+/* Badge */
+.status-badge{position:absolute;top:-8px;right:-8px;padding:3px 8px;border-radius:10px;font-size:9px;font-weight:600;display:flex;align-items:center;gap:3px}
+.badge-key{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.badge-ready{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#34d399}
+
+/* Warning box */
+.warn-box{margin-top:10px;padding:14px 18px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;font-size:14px;color:#cbd5e1;line-height:1.6;opacity:0;animation:fadeInUp .5s ease forwards;animation-delay:5.6s}
+
+/* Pipeline numbers */
+.pipe-list{display:flex;flex-direction:column;gap:8px;width:100%;max-width:900px;margin-bottom:25px}
+.pipe-item{display:flex;align-items:center;gap:14px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 20px;opacity:0;animation:fadeInUp .5s ease forwards;transition:transform .3s}
+.pipe-item:hover{transform:translateX(6px)}
+.pipe-item:nth-child(1){animation-delay:3.6s}.pipe-item:nth-child(2){animation-delay:3.8s}
+.pipe-item:nth-child(3){animation-delay:4.0s}.pipe-item:nth-child(4){animation-delay:4.2s}
+.pipe-item:nth-child(5){animation-delay:4.4s}.pipe-item:nth-child(6){animation-delay:4.6s}
+.pipe-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0}
+.pipe-content{flex:1}.pipe-title{font-size:14px;font-weight:700;color:#fff}.pipe-desc{font-size:12px;color:#94a3b8;margin-top:2px}
+
+/* Responsive */
+@media(max-width:1024px){.container{padding:40px 20px 60px}.section-title{font-size:36px}.arch-diagram{flex-direction:column;gap:12px}.arch-conn{transform:rotate(90deg);margin:6px 0}.section-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<canvas id="particlesCanvas"></canvas>
+
+<div class="container">
+  <h1 class="section-title">AI 大模型核心原理</h1>
+  <p class="section-subtitle">从 Token 到 ChatGPT — 七个关键技术串联全景</p>
+
+  <!-- Architecture Pipeline -->
+  <div class="arch-diagram">
+    <div class="arch-layer"><div class="layer-label">Step 1</div><div class="layer-box l-token" style="position:relative"><div class="status-badge badge-key">入口</div><div class="layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><div class="layer-title">Token 化</div><div class="layer-desc">文本拆分为词元</div></div></div>
+    <div class="arch-conn"><div class="conn-line"></div><span class="conn-label">数字ID</span></div>
+    <div class="arch-layer"><div class="layer-label">Step 2</div><div class="layer-box l-embed"><div class="layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div><div class="layer-title">Embedding</div><div class="layer-desc">文字→数学向量</div></div></div>
+    <div class="arch-conn"><div class="conn-line"></div><span class="conn-label">向量空间</span></div>
+    <div class="arch-layer"><div class="layer-label">Step 3</div><div class="layer-box l-trans" style="position:relative"><div class="status-badge badge-ready">核心</div><div class="layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z"/></svg></div><div class="layer-title">Transformer</div><div class="layer-desc">核心架构（2017）</div></div></div>
+    <div class="arch-conn"><div class="conn-line"></div><span class="conn-label">注意力</span></div>
+    <div class="arch-layer"><div class="layer-label">Step 4</div><div class="layer-box l-attn"><div class="layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div><div class="layer-title">Attention</div><div class="layer-desc">上下文关注分配</div></div></div>
+    <div class="arch-conn"><div class="conn-line"></div><span class="conn-label">逐层提取</span></div>
+    <div class="arch-layer"><div class="layer-label">Step 5</div><div class="layer-box l-layer"><div class="layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4v16M8 4v16M12 4v16M16 4v16M20 4v16"/></svg></div><div class="layer-title">多层网络</div><div class="layer-desc">40~120+层</div></div></div>
+    <div class="arch-conn"><div class="conn-line"></div><span class="conn-label">预测</span></div>
+    <div class="arch-layer"><div class="layer-label">Output</div><div class="layer-box l-output"><div class="layer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg></div><div class="layer-title">下一个 Token</div><div class="layer-desc">ChatGPT/Claude/Gemini</div></div></div>
+  </div>
+
+  <!-- Key concepts grid -->
+  <div class="section-grid">
+    <div class="info-card"><div class="card-header"><div class="card-icon blue">1</div><div class="card-title">一句话概括</div></div><div class="card-text">通过学习<span class="hl-blue">海量文本的统计规律</span>，预测下一个最可能出现的词（Token）。这是所有大模型最底层的工作方式。</div></div>
+    <div class="info-card"><div class="card-header"><div class="card-icon purple">2</div><div class="card-title">Token 是什么？</div></div><div class="card-text">文本被拆成<span class="hl-purple">词元（Token）</span>，每个对应唯一数字ID。如"我喜欢AI"→ [312, 5431, 845]。模型在数字世界里运算。</div></div>
+    <div class="info-card"><div class="card-header"><div class="card-icon green">3</div><div class="card-title">Embedding 词嵌入</div></div><div class="card-text">把"猫"→ [0.23, -0.54, 1.27, ...]。<span class="hl-green">语义相近的词</span>在向量空间中距离更近，模型因此"理解"词语关系。</div></div>
+    <div class="info-card"><div class="card-header"><div class="card-icon red">4</div><div class="card-title">Attention 注意力</div></div><div class="card-text">"小明把书放在桌子上，然后<span class="hl-red">他</span>离开了"。Attention 让"他"<span class="hl-red">80% 关注小明</span>，理解上下文指代关系。</div></div>
+  </div>
+
+  <!-- Training pipeline -->
+  <p style="font-size:20px;font-weight:700;color:#fff;margin:10px 0 15px;text-align:center;opacity:0;animation:fadeInUp .6s forwards;animation-delay:3.4s">训练三阶段</p>
+  <div class="pipe-list">
+    <div class="pipe-item"><div class="pipe-num" style="background:linear-gradient(135deg,#60a5fa,#3b82f6)">1</div><div class="pipe-content"><div class="pipe-title">预训练 Pre-training</div><div class="pipe-desc">阅读海量互联网内容（书籍·论文·代码·网站），预测下一个 Token → 得到<span class="hl-blue">基础模型 Base Model</span></div></div></div>
+    <div class="pipe-item"><div class="pipe-num" style="background:linear-gradient(135deg,#feca57,#f59e0b)">2</div><div class="pipe-content"><div class="pipe-title">指令微调 SFT</div><div class="pipe-desc">给大量"问题→标准答案"样本，让续写模型学会<span class="hl-amber">听懂指令</span>，变成问答助手</div></div></div>
+    <div class="pipe-item"><div class="pipe-num" style="background:linear-gradient(135deg,#e94560,#ec4899)">3</div><div class="pipe-content"><div class="pipe-title">RLHF 人类反馈强化学习</div><div class="pipe-desc">同一问题 → 多个答案 → 人工排序 → 训练奖励模型 → 强化学习优化 → <span class="hl-red">更安全、更有帮助</span></div></div></div>
+    <div class="pipe-item"><div class="pipe-num" style="background:linear-gradient(135deg,#a855f7,#8b5cf6)">4</div><div class="pipe-content"><div class="pipe-title">推理模型</div><div class="pipe-desc">GPT-5/Claude Opus/DeepSeek-R1：不再直接输出答案，学会<span class="hl-purple">分析→规划→验证→输出</span></div></div></div>
+    <div class="pipe-item"><div class="pipe-num" style="background:linear-gradient(135deg,#64748b,#475569)">!</div><div class="pipe-content"><div class="pipe-title">参数 ≠ 智慧</div><div class="pipe-desc">GPT-2: 1.5亿 → GPT-3: 1750亿 → Llama 70B: 700亿。<span class="hl-dim">参数多不一定更聪明，训练数据和训练方法同样重要。</span></div></div></div>
+  </div>
+
+  <!-- Hallucination + Summary -->
+  <div class="quote-section">
+    <div class="quote-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>幻觉与局限</div>
+    <div class="quote-text">"语法正确 + 逻辑合理 + 事实错误"</div>
+    <div class="quote-desc">模型本质是<span class="hl-red">预测最合理的下一个 Token</span>，而不是查询真实数据库。因此会编造不存在的论文、引用、API、人名——这被称为 <span class="hl-red">Hallucination（幻觉）</span>，是当前大模型的核心挑战之一。</div>
+    <div class="warn-box"><span class="hl-cyan">核心洞察：</span>大模型并不是像人一样"存储知识库然后查询答案"，而是把语言、知识、逻辑和模式<span class="hl-green">压缩进数十亿到数万亿个参数里</span>。当你提问时，它通过 Transformer 的注意力机制分析上下文，并逐个预测最合适的 Token。</div>
+  </div>
+
+</div>
+
+<script>
+// Canvas particles
+const canvas=document.getElementById('particlesCanvas'),ctx=canvas.getContext('2d');
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+const particles=[];
+class Particle{constructor(){this.reset()}reset(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.size=Math.random()*2+.5;this.speedX=(Math.random()-.5)*.5;this.speedY=(Math.random()-.5)*.5;this.opacity=Math.random()*.5+.1;this.color=`rgba(96,165,250,${this.opacity})`}update(){this.x+=this.speedX;this.y+=this.speedY;if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height)this.reset()}draw(){ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill()}}
+for(let i=0;i<100;i++)particles.push(new Particle());
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(animate)}
+animate();
+
+// F key fullscreen
+document.addEventListener('keydown',function(e){
+  if((e.key==='f'||e.key==='F')&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){
+    e.preventDefault();document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+  }
+});
+</script>
+</body>
+</html>
