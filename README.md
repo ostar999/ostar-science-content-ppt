@@ -1,26 +1,54 @@
 <div align="center">
 
-# AI-Animation.skill
+# ostar-science-content-ppt
 
-> *使用 AI 生成 HTML 演示动画的工具集，让视频创作者能够快速将科普文本转换为炫酷的演示动画。*
+> *将科普内容文本转换为可视化PPT风格网页的 AI 工作流 Skill*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![OpenClaw](https://img.shields.io/badge/OpenClaw-Skill-green)](https://openclaw.ai/)
 [![HTML5](https://img.shields.io/badge/HTML5-Demo-orange)](assets/templates/)
 
 <br>
 
-**不是模板合集，是可运行的 AI 动画生成工作流。**
+**基于 [Unclecheng-li/AI-Animation-Skill](https://github.com/Unclecheng-li/AI-Animation-Skill) 改进而来。**
 
 <br>
 
-基于整理好的 Prompt 模板集成的 Skill，
-配合 OpenClaw、Workbuddy、QClaw 等 AI 使用，
-两步自动完成「科普文本 → 炫酷动画」的转换。
+在原作基础上新增**总览预览**功能（按 `N` 键一键查看所有页面缩略图），
+并优化了多模板对比生成的流程。
 
-[快速开始](#快速开始) · [模板总览](#模板总览) · [效果示例](#效果示例) · [更新日志](CHANGELOG.md)
+[快速开始](#快速开始) · [新增功能](#新增功能) · [模板总览](#模板总览) · [更新日志](CHANGELOG.md)
 
 </div>
+
+---
+
+## 致谢
+
+本项目基于 **[Unclecheng-li/AI-Animation-Skill](https://github.com/Unclecheng-li/AI-Animation-Skill)** 的出色工作。
+
+感谢原作者 **Unclecheng** 创建了完整的 AI 动画生成工作流、26 个 PPT Level2 模板、14 个 Animation 模板，以及详尽的模板选择指南。本项目继承了原作的核心理念和模板体系，并在此基础上增加了实用功能。
+
+---
+
+## 新增功能
+
+### 🆕 总览预览（Overview Panel）
+
+| 模式 | 触发方式 | 说明 |
+|------|---------|------|
+| 模式一（原始版） | 导航栏 `⊞` 按钮 或 按 `N` 键 | 保留可见按钮 + 键盘快捷键 |
+| 模式二（模板重构版） | 按 `N` 键 | 页面保持干净无 UI 元素，N 键切换 |
+
+**总览面板特性：**
+- 🖼️ 全屏网格展示所有页面 25% 缩略图
+- 📄 每张卡片标注页码和页面标题
+- 👆 点击卡片直接跳转到对应页面
+- ⌨️ `N` / `ESC` 键快速切换
+- 🧹 缩略图中自动隐藏装饰元素，保证清晰度
+
+### 🆕 多模板对比生成
+
+支持同时使用多个 PPT 模板生成不同风格版本，方便对比选择最佳视觉效果。
 
 ---
 
@@ -35,28 +63,27 @@
 模式二（可选）：已生成的 HTML → Animation 流程图模板重构 → 平面 UI 风格
 ```
 
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/c09e0f57-7f5a-4014-8809-b5e99d11e9f5" />
-
 适用于 B 站视频素材、课堂教学、技术分享等场景。
 
 ---
 
 ## 快速开始
 
-### 安装 (例：Workbuddy)
+### 安装 (例：Claude Code)
 
 ```
 1. 下载本项目
-2. 将 AI-Animation-Skill 文件夹复制到 ~/.workbuddy/skills/ 目录
-3. 重启 WorkBuddy
+2. 将 ostar-science-content-ppt 文件夹复制到 ~/.claude/skills/ 目录
+3. 在对话中输入 /ostar-science-content-ppt 或提供科普内容触发 Skill
 ```
 
 ### 使用
 
 **模式一（PPT 演示）：**
-1. 在对话中输入科普内容，说「帮我生成PPT」
+1. 在对话中输入科普内容
 2. Skill 自动生成基础 HTML → 选择 Level2 模板重构
 3. 输出炫酷演示文件
+4. 按 `N` 键打开总览预览所有页面
 
 **模式二（流程图）：**
 1. 先完成模式一，生成 AI_Animation.html
@@ -65,44 +92,26 @@
 
 ---
 
-## 蒸馏了什么
-
-| 类别            | 内容                           |
-| ------------- | ---------------------------- |
-| **PPT Level2 模板** | 26 个高质量 HTML 轮播演示模板（含选择指南 SUMMARY.md） |
-| **PPT 基础模板**  | 4 个可复用的 HTML 轮播演示模板          |
-| **Animation 模板**  | 14 个流程图风格的 HTML 模板（含选择指南 SUMMARY.md） |
-| **工作流**       | 文本 → HTML → Level2 模板重构 → 流程图 的完整链路 |
-
----
-
 ## 项目结构
 
 ```
-AI-Animation-Skill/
+ostar-science-content-ppt/
 ├── SKILL.md                              # Skill 主文件（工作流定义）
 ├── README.md                             # 本文件
 ├── LICENSE                               # MIT 开源协议
+├── CHANGELOG.md                          # 更新日志
 └── assets/
     └── templates/
         ├── PPT Template-level2/          # ⭐ PPT 高级模板（优先选用，26 个）
         │   ├── SUMMARY.md                #   AI 选模板参考文档
         │   ├── 1.html ~ 9-3.html         #   9 个系列 26 个模板
-        ├── PPT/                          # PPT 基础模板（回退选用，4 个）
-        │   ├── PPT-Generate-1.html
-        │   ├── PPT-Generate-2.html
-        │   ├── PPT-Generate-3.html       #   基础回退推荐
-        │   └── PPT-Generate-4.html
+        ├── PPT/                          # PPT 基础模板（回退选用）
+        │   ├── PPT-Generate-1.html ~ PPT-Generate-7.html
         └── Animation/                    # 流程图模板（14 个）
             ├── SUMMARY.md                #   AI 选模板参考文档
-            ├── RNN-2.html ~ RNN-7.html   #   RNN 系列（6 个）
-            ├── LSTM-1.html               #   LSTM 三阶段
-            ├── Comprehension.html         #   架构理解
-            ├── GPU.html                   #   计算硬件
-            ├── word2vec-1.html            #   词向量
-            ├── onehot.html / onehot-drawback.html  # One-hot 编码
-            ├── The fatal flaw of DNN.html #   DNN 缺陷
-            └── Cross-modal disentanglement - 2.html  # 跨模态
+            ├── RNN-2.html ~ RNN-7.html
+            ├── LSTM-1.html
+            └── ...
 ```
 
 ---
@@ -110,8 +119,6 @@ AI-Animation-Skill/
 ## 模板总览
 
 ### PPT Level2 模板（26 个，优先选用）
-
-> 模型根据科普内容类型自动选择最合适的模板，详见 `SUMMARY.md`
 
 | 系列 | 模板数 | 适用场景 | 亮点 |
 |------|--------|---------|------|
@@ -125,49 +132,17 @@ AI-Animation-Skill/
 | **8** | 3 | 辩论/对比/融合 | 8-3 达 30 组 VS 对比 |
 | **9** | 3 | 总结/共识/精炼 | 9-3 仅 5 页最精炼 |
 
-### PPT 基础模板（4 个，回退选用）
-
-| 模板                 | 特点         | 说明     |
-| ------------------ | ---------- | ------ |
-| PPT-Generate-1     | 简洁风格       | 基础演示   |
-| PPT-Generate-2     | 图表丰富       | 数据类内容  |
-| **PPT-Generate-3** | **视觉效果最佳** | **通用推荐** |
-| PPT-Generate-4     | 布局灵活       | 复杂内容   |
-
 ### Animation 流程图模板（14 个）
 
-| 模板        | 特点       | 适用场景     |
-| --------- | -------- | -------- |
-| **RNN-3** | **分层卡片** | **通用推荐（默认）** |
-| RNN-2     | 分步展示     | RNN 原理   |
-| RNN-4     | 标准化流程    | 22 种动画，最密 |
-| RNN-5     | 致命缺陷     | 问题/解决对比  |
-| RNN-6     | 梯度爆炸警示   | explode 动画 |
-| RNN-7     | 双问题对比    | 梯度消失+爆炸  |
-| LSTM-1    | 三阶段门控    | LSTM 展示  |
-| onehot    | 编码介绍     | 离散特征     |
-| onehot-drawback | 编码缺陷 | 稀疏性问题    |
-| word2vec-1 | 语义身份证  | 词向量      |
-| Comprehension | 理解架构 | 认知类      |
-| GPU       | 计算节点     | 硬件展示     |
-| Cross-modal disentanglement - 2 | 跨模态解耦 | 多模态 |
-| The fatal flaw of DNN | DNN 缺陷 | 深度学习问题 |
-
----
-
-## 效果示例
-
-### PPT 风格（Level2 模板重构后）
-
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/e28ccecf-2632-40f3-b239-c0dd7909af97" />
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/9efad557-81e2-49d3-9226-d5ce98b84075" />
-
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/8c1be8cc-8293-4893-8b56-b695e5daf6fe" />
-
-### 流程图风格（Animation 模板重构后）
-
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/5a65dd82-b690-4d1a-87ba-1b6196b01273" />
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/f7481d36-44b1-439e-8b3d-ec6def4795e1" />
+| 模板 | 特点 | 适用场景 |
+|------|------|---------|
+| **RNN-3** | 分层卡片 | 通用推荐（默认） |
+| RNN-4 | 标准化流程 | 22 种动画，最密 |
+| RNN-6 | 梯度爆炸警示 | explode 动画 |
+| LSTM-1 | 三阶段门控 | LSTM 展示 |
+| word2vec-1 | 语义身份证 | 词向量 |
+| Comprehension | 理解架构 | 认知类 |
+| GPU | 计算节点 | 硬件展示 |
 
 ---
 
@@ -175,6 +150,7 @@ AI-Animation-Skill/
 
 - **前端**：HTML5 + CSS3 + JavaScript（原生，无框架依赖）
 - **动画**：CSS Animation / Keyframes / 3D Transform / Canvas 粒子
+- **图标**：Font Awesome / Lucide / RemixIcon（按模板选择）
 - **兼容性**：现代浏览器（Chrome、Firefox、Safari、Edge）
 
 ---
@@ -187,12 +163,23 @@ AI-Animation-Skill/
 
 ## 开源协议
 
-本项目采用 [MIT License](LICENSE)。
+本项目基于 [Unclecheng-li/AI-Animation-Skill](https://github.com/Unclecheng-li/AI-Animation-Skill)，继承其 [MIT License](LICENSE)。
+
+```
+MIT License
+
+Copyright (c) 2026 Unclecheng (original author)
+Copyright (c) 2026 ostar999
+
+Permission is hereby granted, free of charge, to any person obtaining a copy...
+```
 
 ---
 
 <div align="center">
 
 **如果对你有帮助，欢迎 Star ⭐**
+
+**感谢 [Unclecheng](https://github.com/Unclecheng-li) 的原创工作 🎉**
 
 </div>
