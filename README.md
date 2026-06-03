@@ -62,46 +62,119 @@
 
 ---
 
+## 触发方式
+
+在 Claude Code 对话中，以下任一方式可触发此 Skill：
+
+| 触发方式 | 示例 |
+|---------|------|
+| 斜杠命令 | `/ostar-science-content-ppt @科普文档.md` |
+| 触发词 | "生成PPT"、"生成演示网页"、"生成流程图" |
+| 直接提供内容 | 在对话中贴入科普文本，Skill 自动识别并启动 |
+
 ## 它能做什么
 
-输入一段技术科普文本，AI 自动生成演示动画：
+输入一段科普文本，AI 自动完成全流程：
 
 ```
-用户输入：OSI 七层模型是什么？(相关科普文档)
+模式一（默认，3 步自动执行）：
+  科普文本 → Step 1 生成提示词 → Step 2 生成原始轮播 HTML → Step 3 模板重构 → 3 个 HTML 输出
 
-模式一（默认）：科普文本 → 生成基础 HTML → Level2 PPT 模板重构 → 炫酷演示文件
-模式二（可选）：已生成的 HTML → Animation 流程图模板重构 → 平面 UI 风格
+模式二（用户说「生成流程图」后触发）：
+  已生成的 HTML → Animation 模板重构 → 单页流程图
 ```
 
-适用于 B 站视频素材、课堂教学、技术分享等场景。
+**适用场景：** B 站视频素材、课堂教学、技术分享、小红书图文等。
 
-<img src="assets/images/demo-main.png" width="2560" height="1440" alt="演示总览" />
+### 完整工作流
+
+| 步骤 | 做什么 | 输出文件 | 说明 |
+|------|--------|----------|------|
+| Step 1 | 将用户文本转为 PPT 提示词 | 无（对话中） | 自动应用模板约束 |
+| Step 2 | 生成原始轮播 HTML | `AI_Animation.html` | Font Awesome 图标 · 可见导航按钮 · 永不覆盖 |
+| Step 3 | 用 PPT Level2 模板重构 | `AI_Animation_level2.html` | Lucide 图标 · 纯键盘操作 · 新文件 |
+| 模式二 | 用 Animation 模板重构为流程图 | `AI_Animation_flow.html` | Canvas 粒子 · 单页全景 · 新文件 |
+
+> **🚫 核心规则：每一步生成新文件，禁止覆盖已有文件。** 3 个 HTML 各自独立，方便对比不同版本效果。
+
+### 文件命名规则
+
+```
+项目目录/
+├── AI_Animation.html          ← Step 2 原始轮播版（可见按钮 + 圆点导航）
+├── AI_Animation_level2.html   ← Step 3 模板重构版（纯键盘，无可见 UI）
+└── AI_Animation_flow.html     ← 模式二 单页流程图版（鸟瞰总览）
+```
 
 ---
 
 ## 快速开始
 
-### 安装 (例：Claude Code)
+### 环境要求
+
+- **Claude Code**（CLI 或 IDE 插件版）
+- 现代浏览器（Chrome / Firefox / Safari / Edge）
+- 无需 Node.js、Python 等额外依赖
+
+### 安装
+
+**方式一：Git Clone（推荐，可自动更新）**
+
+```bash
+cd ~/.claude/skills/
+git clone https://github.com/ostar999/ostar-science-content-ppt.git
+```
+
+**方式二：手动下载**
+
+```bash
+# 1. 下载本项目 ZIP 并解压
+# 2. 将解压后的 ostar-science-content-ppt 文件夹复制到 ~/.claude/skills/
+cp -r ~/Downloads/ostar-science-content-ppt ~/.claude/skills/
+```
+
+安装完成后，`/ostar-science-content-ppt` 命令即可用。
+
+### 基本使用
+
+**模式一（PPT 演示，默认）：**
 
 ```
-1. 下载本项目
-2. 将 ostar-science-content-ppt 文件夹复制到 ~/.claude/skills/ 目录
-3. 在对话中输入 /ostar-science-content-ppt 或提供科普内容触发 Skill
+1. 准备科普内容的 .md 文件（或直接在对话中贴入文本）
+2. 输入 /ostar-science-content-ppt @你的科普.md
+3. Skill 自动完成 Step 1→2→3，生成 2 个 HTML 文件
+4. 在浏览器中打开 HTML，用 ← → 切换页面，F 全屏，N 总览
 ```
-
-### 使用
-
-**模式一（PPT 演示）：**
-1. 在对话中输入科普内容
-2. Skill 自动生成基础 HTML → 选择 Level2 模板重构
-3. 输出炫酷演示文件
-4. 用 `←` `→` 切换页面，`F` 全屏演示，`N` 打开总览
 
 **模式二（流程图）：**
-1. 先完成模式一，生成 AI_Animation.html
+
+```
+1. 先完成模式一
 2. 说「生成流程图」
-3. Skill 自动选择 Animation 模板重构为平面 UI 风格
-4. 用 `F` 全屏演示，`N` 打开鸟瞰总览
+3. Skill 自动选择 Animation 模板，生成单页全景流程图
+4. 用 F 全屏演示，N 打开鸟瞰 mini-map
+```
+
+**模板替换：**
+
+```
+「以 6-2.html 为模板重构」  → 指定特定 PPT Level2 模板
+「用 RNN-4 模板生成流程图」 → 指定特定 Animation 模板
+```
+
+### AI 自动选模板机制
+
+生成时，AI 会根据科普内容的类型自动选择最佳模板（无需用户指定）：
+
+| 内容类型 | PPT Level2（Step 3） | Animation（模式二） |
+|---------|---------------------|-------------------|
+| 对比/辩论 | 8-1（12组VS）、8-3（30组VS） | — |
+| 步骤/流程 | 3-2（SVG流程图）、6-1/6-3 | RNN-4（22种动画） |
+| 概念/定义 | 1、2（13种动画）、3-1 | RNN-3（默认） |
+| 案例/实验 | 4-2、4-3（代码雨动画） | — |
+| 警示/危险 | 5-4（15种动画）、7-3 | RNN-6（explode动画） |
+| 架构/多模块 | 6-2（红绿对比） | Comprehension（连线动画） |
+| 轻量/快速 | 3-3（331行）、4-1、9-3 | GPU（570行） |
 
 ### 键盘快捷键
 
@@ -204,6 +277,57 @@ ostar-science-content-ppt/
 
 <img src="assets/images/flow-demo-1.png" width="2560" height="1440" alt="流程图效果1" />
 <img src="assets/images/flow-demo-2.png" width="2560" height="1440" alt="流程图效果2" />
+
+---
+
+## 交互实现细节
+
+### 两种模板的区别
+
+| 类型 | 用途 | 位置 |
+|------|------|------|
+| **内容布局模板** | 决定页面的视觉风格（配色、排版、动画、卡片样式） | `PPT Template-level2/` · `PPT/` · `Animation/` |
+| **交互参考模板** | 决定交互行为的 JS 实现（F 全屏、N 总览、动画重置） | `interaction-examples/` |
+
+> ⚠️ 内容布局模板和交互参考模板**独立选择，互不绑定**。生成时 AI 会同时参考两者：视觉效果来自内容模板，交互代码来自交互参考模板。
+
+### 各模式交互差异
+
+| 特性 | Step 2 原始版 | Step 3 重构版 | 模式二 流程图 |
+|------|:---:|:---:|:---:|
+| 可见导航按钮 | ✅ ← → ⊞ | 🚫 无 | 🚫 无 |
+| 页面圆点 | ✅ | 🚫 无 | 🚫 无 |
+| 页码指示器 | ✅ "3/15" | 🚫 无 | 🚫 无 |
+| 键盘翻页 | ← → Home End | ← → Home End PageUp PageDown 空格 | 🚫 单页无需 |
+| 总览面板 | N 键 · 缩略图网格 | N 键 · 缩略图网格 | N 键 · 鸟瞰 mini-map |
+| 全屏 | F 键 | F 键 | F 键 |
+| 键盘提示条 | 🚫 禁止 | 🚫 禁止 | 🚫 禁止 |
+
+> 💡 快捷键是**隐藏功能**，页面上不会显示任何操作提示。用户自行探索发现。
+
+### 总览面板（N 键）实现原理
+
+- **多页模式：** 每页 cloneNode → 缩放到 25% → 冻结所有动画 → 隐藏粒子/装饰 → 网格展示
+- **单页模式：** 克隆整个内容区 → 计算适配视口的缩放比例 → 鸟瞰 mini-map
+- **退出：** 再次按 N 键或点击关闭按钮
+
+---
+
+## 已知问题与解决方案
+
+### Q1: 切换页面后动画不重触发
+
+**原因：** CSS `animation-fill-mode: forwards` 使动画只执行一次，`display:none` 也无法重置。
+
+**解决：** 切换页面时 `cloneNode(true)` + `replaceChild` 强制浏览器重新渲染。这是跨浏览器最可靠的方案。
+
+### Q2: AI 直接生成的 HTML 代码量不足
+
+模型有时只生成 200-400 行，内容单薄。提示词中要求"代码 1000 行以上"可有效解决。
+
+### Q3: 流程图模式不生成新内容
+
+模式二**不生成新内容**，仅将已有的 PPT 版内容按 Animation 模板样式重新视觉呈现。需先完成模式一。
 
 ---
 
