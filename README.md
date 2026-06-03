@@ -65,6 +65,8 @@
 
 适用于 B 站视频素材、课堂教学、技术分享等场景。
 
+<img src="assets/images/demo-main.png" width="2560" height="1440" alt="演示总览" />
+
 ---
 
 ## 快速开始
@@ -143,6 +145,22 @@ ostar-science-content-ppt/
 | word2vec-1 | 语义身份证 | 词向量 |
 | Comprehension | 理解架构 | 认知类 |
 | GPU | 计算节点 | 硬件展示 |
+
+---
+
+## 效果示例
+
+### PPT 风格（Level2 模板重构后）
+
+<img src="assets/images/ppt-demo-1.png" width="2560" height="1440" alt="PPT演示效果1" />
+<img src="assets/images/ppt-demo-2.png" width="2560" height="1440" alt="PPT演示效果2" />
+
+<img src="assets/images/ppt-demo-3.png" width="2560" height="1440" alt="PPT演示效果3" />
+
+### 流程图风格（Animation 模板重构后）
+
+<img src="assets/images/flow-demo-1.png" width="2560" height="1440" alt="流程图效果1" />
+<img src="assets/images/flow-demo-2.png" width="2560" height="1440" alt="流程图效果2" />
 
 ---
 
