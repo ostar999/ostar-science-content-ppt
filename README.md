@@ -144,6 +144,18 @@ cp -r ~/Downloads/ostar-science-content-ppt ~/.claude/skills/
 
 安装完成后，`/ostar-science-content-ppt` 命令即可用。
 
+### 更新
+
+根据安装方式选择对应的更新方法：
+
+| 安装方式 | 更新命令 |
+|---------|---------|
+| Plugin Marketplace | `/plugin update ostar-science-content-ppt`（在 Claude Code 对话中运行） |
+| Git Clone | `cd ~/.claude/skills/ostar-science-content-ppt && git pull` |
+| 手动下载 | 重新下载最新 ZIP → 覆盖 `~/.claude/skills/ostar-science-content-ppt/` |
+
+> 💡 推荐使用 **Git Clone** 方式安装，`git pull` 一键更新最方便。Plugin Marketplace 方式也可以用 `/plugin update` 自动拉取最新版本。
+
 ### 基本使用
 
 **模式一（PPT 演示，默认）：**
